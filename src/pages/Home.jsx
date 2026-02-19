@@ -25,7 +25,12 @@ function Home() {
     setFilteredCoins(filtered);
   }, [coins, searchTerm]);
 
-  if (loading) return <div className="text-white text-center mt-10">Loading...</div>;
+  if (loading) return (
+    <div className="flex flex-col items-center justify-center mt-20">
+      <div className="w-12 h-12 border-4 border-t-transparent border-cyan-400 rounded-full animate-spin" />
+      <div className="text-white mt-4">Scanning Blockchain...</div>
+    </div>
+  );
   if (error) return <div className="text-red-500 text-center mt-10">Error: {error}</div>;
 
   return (
