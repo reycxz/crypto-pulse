@@ -65,25 +65,7 @@ function Settings() {
           </div>
         </div>
 
-        {/* Color palette reference card */}
-        <div className="glass-card p-5 mt-4">
-          <p className="text-xs font-semibold mb-3 uppercase tracking-widest"
-            style={{ color: '#808080' }}>Brand Palette</p>
-          <div className="flex gap-3">
-            {[
-              { color: '#F5C400', label: 'Yellow' },
-              { color: '#111111', label: 'Black', border: true },
-              { color: '#808080', label: 'Gray' },
-              { color: '#FFFFFF', label: 'White', border: true },
-            ].map(({ color, label, border }) => (
-              <div key={label} className="flex flex-col items-center gap-1.5">
-                <div className="w-8 h-8 rounded-lg"
-                  style={{ background: color, border: border ? '1px solid rgba(255,255,255,0.2)' : 'none' }} />
-                <span className="text-[10px]" style={{ color: '#808080' }}>{label}</span>
-              </div>
-            ))}
-          </div>
-        </div>
+
       </div>
     </div>
   );
