@@ -17,9 +17,10 @@ export const useFetchCrypto = () => {
 
       try {
         const vs = (currency || 'USD').toLowerCase();
-        // Uses the Vite dev proxy at /api -> https://api.coingecko.com/api/v3
+        // Calls our Vercel serverless function which proxies to CoinGecko
+        // with the API key kept securely in an environment variable.
         const res = await fetch(
-          `/api/coins/markets?vs_currency=${vs}&order=market_cap_desc&per_page=10&page=1`
+          `/api/markets?vs_currency=${vs}&order=market_cap_desc&per_page=10&page=1`
         );
 
         if (!res.ok) {
