@@ -1,13 +1,14 @@
-import { useState, useRef, useEffect } from 'react';
+import { useRef, useEffect } from 'react';
 import { useFetchCrypto } from '../hooks/useFetchCrypto';
 import { useCrypto } from '../context/CryptoContext';
 import MarketChart from '../components/MarketChart';
+import useLocalStorage from '../hooks/useLocalStorage';
 import { Search, TrendingUp, TrendingDown, AlertCircle } from 'lucide-react';
 
 function Home() {
   const { loading, error } = useFetchCrypto();
   const { coins, currency } = useCrypto();
-  const [searchTerm, setSearchTerm] = useState('');
+  const [searchTerm, setSearchTerm] = useLocalStorage('cryptoSearchQuery', '');
   const inputRef = useRef(null);
 
   // Auto-focus search when data loads
