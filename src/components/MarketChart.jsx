@@ -1,15 +1,11 @@
 import {
-  BarChart, Bar, XAxis, YAxis, Tooltip,
-  ResponsiveContainer, CartesianGrid, Cell
+  LineChart, Line, XAxis, YAxis, Tooltip,
+  ResponsiveContainer, CartesianGrid, Dot
 } from 'recharts';
 import { useCrypto } from '../context/CryptoContext';
 
 // ── Color palette ────────────────────────────────────────────────────────────
-const YELLOW = '#F5C400';   // TIP brand yellow — reserved for the top coin
-const PALETTE = [            // all other bars cycle through these
-  '#AAAAAA', '#C49B00', '#808080', '#FFD740',
-  '#D4A800', '#636363', '#F0C000', '#999999', '#E6B800',
-];
+const YELLOW = '#F5C400';   // TIP brand yellow
 
 // ── Currency helpers ─────────────────────────────────────────────────────────
 const CURRENCY_META = {
@@ -44,6 +40,21 @@ const makeTickFormatter = (currency) => {
   };
 };
 
+// ── Custom Dot — highlights the highest-price point in brand yellow ───────────
+const CustomDot = ({ cx, cy, index, maxIdx }) => {
+  const isMax = index === maxIdx;
+  return (
+    <Dot
+      cx={cx}
+      cy={cy}
+      r={isMax ? 6 : 4}
+      fill={isMax ? YELLOW : '#1a1a1a'}
+      stroke={isMax ? YELLOW : 'rgba(245,196,0,0.5)'}
+      strokeWidth={2}
+    />
+  );
+};
+
 // ── Custom Tooltip ────────────────────────────────────────────────────────────
 const CustomTooltip = ({ active, payload, label, formatter }) => {
   if (!active || !payload?.length) return null;
@@ -68,7 +79,7 @@ const MarketChart = () => {
     price: coin.current_price,
   }));
 
-  // Index of the highest-priced coin → gets the yellow brand color
+  // Index of the highest-priced coin → gets the yellow brand accent
   const maxIdx = chartData.reduce(
     (best, d, i) => (d.price > chartData[best].price ? i : best), 0
   );
@@ -83,7 +94,7 @@ const MarketChart = () => {
       <div className="mb-5 flex items-center gap-3">
         <div className="w-1 h-8 rounded-full flex-shrink-0" style={{ background: YELLOW }} />
         <div>
-          <h2 className="text-white font-semibold text-lg">Price Comparison</h2>
+          <h2 className="text-white font-semibold text-lg">Price Trend</h2>
           <p className="text-sm" style={{ color: '#808080' }}>
             Top 10 by market cap · logarithmic scale · prices in {currencyLabel}
           </p>
@@ -93,7 +104,7 @@ const MarketChart = () => {
       {/* Chart */}
       <div className="h-72 w-full">
         <ResponsiveContainer width="100%" height="100%">
-          <BarChart data={chartData} margin={{ top: 5, right: 10, left: 10, bottom: 5 }}>
+          <LineChart data={chartData} margin={{ top: 5, right: 10, left: 10, bottom: 5 }}>
             <CartesianGrid
               strokeDasharray="3 3"
               stroke="rgba(255,255,255,0.04)"
@@ -108,7 +119,6 @@ const MarketChart = () => {
             {/*
               Logarithmic scale — essential so Bitcoin ($56k) doesn't
               dwarf Ethereum ($1.6k) and USDT ($1.00).
-              domain=['auto','auto'] lets Recharts auto-fit the visible range.
             */}
             <YAxis
               scale="log"
@@ -122,21 +132,17 @@ const MarketChart = () => {
             />
             <Tooltip
               content={<CustomTooltip formatter={intlFormatter} />}
-              cursor={{ fill: 'rgba(245,196,0,0.05)' }}
+              cursor={{ stroke: 'rgba(245,196,0,0.15)', strokeWidth: 2 }}
             />
-            {/*
-              minPointSize={5} guarantees even USDT ($1.00) renders
-              as a visible bar and is hoverable/selectable.
-            */}
-            <Bar dataKey="price" radius={[6, 6, 0, 0]} maxBarSize={48} minPointSize={5}>
-              {chartData.map((_, i) => (
-                <Cell
-                  key={`cell-${i}`}
-                  fill={i === maxIdx ? YELLOW : PALETTE[(i < maxIdx ? i : i - 1) % PALETTE.length]}
-                />
-              ))}
-            </Bar>
-          </BarChart>
+            <Line
+              type="monotone"
+              dataKey="price"
+              stroke={YELLOW}
+              strokeWidth={2.5}
+              dot={<CustomDot maxIdx={maxIdx} />}
+              activeDot={{ r: 7, fill: YELLOW, stroke: '#1a1a1a', strokeWidth: 2 }}
+            />
+          </LineChart>
         </ResponsiveContainer>
       </div>
     </div>
